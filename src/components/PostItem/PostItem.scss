@@ -1,0 +1,21 @@
+@import "../../Scss/common/colors";
+
+.postitem {
+  &-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 3px solid goldenrod;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 20px;
+  }
+  &-title {
+  }
+  &-text {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  &-btns {
+  
+  }
+}
