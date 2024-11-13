@@ -8,15 +8,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: "Poppins", sans-serif;
-  /*font-family: "Bebas Neue", sans-serif;*/
-  color: #171717;
+  //font-family: "Bebas Neue", sans-serif;
+  color: $b;
   font-weight: 500;
   font-size: 14px;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-  monospace;
 }
 
 
@@ -26,41 +21,6 @@ code {
   max-width: 1700px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-posts: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 
 a {
   color: $a;
@@ -91,6 +51,11 @@ a {
   left: 0;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Bebas Neue", sans-serif;
+}
+
+//========================
 .post-enter {
   opacity: 0;
 }
@@ -109,26 +74,23 @@ a {
   transition: opacity 200ms ease-in;
 }
 
-.page__wrapper {
-  display: flex;
-  gap: 5px;
+
+.MuiCard-root {
+  margin-bottom: 20px;
+  background-color: #f4f5f8;
   
-  span {
-    padding: 10px;
-    color: $a3;
-    border: 1px solid $a;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: all .2s ease-in-out;
-    
-    &._current {
-      color: coral;
-      font-weight: 600;
-      border: 1px solid coral;
-    }
+  &:first-of-type {
+    margin-top: 20px;
+  }
+  
+  &:last-of-type {
+    margin-bottom: 0;
   }
 }
 
+.home {
+  padding: 40px 0px;
+}
 
 
 
