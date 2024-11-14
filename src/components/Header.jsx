@@ -7,19 +7,15 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import {Link} from "react-router-dom";
 
 const pages = [
-  {name: 'Home', path: '/'},          // Путь для Home
-  {name: 'Login', path: '/login'},    // Путь для Login
-  {name: 'Registration', path: '/register'},  // Путь для Registration
+  {name: 'Home', path: '/'},
+  {name: 'Posts', path: '/posts'},
+  {name: 'Login', path: '/login'},
+  {name: 'Registration', path: '/register'},
 ];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -114,7 +110,7 @@ function ResponsiveAppBar() {
             {pages.map((page) => (
               <MenuItem key={page.name} onClick={handleCloseNavMenu}>
                 <Typography sx={{textAlign: 'center'}}>
-                  <Link to={page.path} style={{textDecoration: 'none', color: 'inherit'}}>
+                  <Link to={page.path} style={{textDecoration: 'none', color: 'inherit', fontSize: '1.2rem'}}>
                     {page.name}
                   </Link>
                 </Typography>
