@@ -56,43 +56,19 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Bebas Neue", sans-serif;
 }
 
-//========================
-.post-enter {
-  opacity: 0;
+h1 {
+  line-height: 1.2 !important;
 }
 
-.post-enter-active {
-  opacity: 1;
-  transition: opacity 200ms ease-in;
-}
-
-.post-exit {
-  opacity: 1;
-}
-
-.post-exit-active {
-  opacity: 0;
-  transition: opacity 200ms ease-in;
-}
-
-.MuiCard-root {
-  margin-bottom: 20px;
-  background-color: #f4f5f8 !important;
-  
-  &:first-of-type {
-    margin-top: 20px;
-  }
-  
-  &:last-of-type {
-    margin-bottom: 0;
-  }
-}
 
 .page {
   padding: 40px 0px;
 }
 
-
+.MuiModal-root {
+  display: grid;
+  place-items: center;
+}
 
 
 

@@ -1,100 +1,121 @@
 import React, {useState} from 'react';
-import {TextField, Button, Grid, Box, Typography} from '@mui/material';
+import axios from 'axios';
+import {TextField, Button, Box, Typography} from '@mui/material';
+import {useNavigate} from 'react-router-dom';
 
 const RegisterPage = () => {
-  // Состояние для полей ввода
-  const [formData, setFormData] = useState({
+  const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState(''); // Для успешной регистрации
+  const [loading, setLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState({
     username: '',
     email: '',
     password: ''
   });
-  // Обработчик изменения данных в полях
-  const handleInputChange = (e) => {
-    const {name, value} = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  // Функция для валидации формы
+  const validateForm = () => {
+    let isValid = true;
+    let errors = {username: '', email: '', password: ''};
+    // Проверка на пустоту
+    if (!username) {
+      errors.username = 'Username is required';
+      isValid = false;
+    }
+    if (!email) {
+      errors.email = 'Email is required';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = 'Email is not valid';
+      isValid = false;
+    }
+    if (!password) {
+      errors.password = 'Password is required';
+      isValid = false;
+    } else if (password.length < 6) {
+      errors.password = 'Password must be at least 6 characters';
+      isValid = false;
+    }
+    setFormErrors(errors);
+    return isValid;
   };
-  // Обработчик отправки формы
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Здесь можно добавить валидацию или отправку данных на сервер
-    console.log('Submitted data:', formData);
+  // Обработчик регистрации
+  const handleRegister = async () => {
+    if (!validateForm()) return;
+    setLoading(true);
+    setError('');
+    setSuccessMessage(''); // Сбрасываем предыдущее сообщение об успехе
+    try {
+      const response = await axios.post('https://jsonplaceholder.typicode.com/users', {
+        username,
+        email,
+        password,
+      });
+      // Если регистрация успешна, сохраняем данные пользователя в localStorage
+      const {data} = response;
+      localStorage.setItem('user', JSON.stringify(data)); // Сохраняем данные пользователя
+      setSuccessMessage('Registration successful!'); // Устанавливаем сообщение об успешной регистрации
+      setTimeout(() => {
+        navigate('/posts'); // Переходим на страницу постов после регистрации
+      }, 2000); // Пауза перед редиректом
+    } catch (err) {
+      setError('Failed to register user');
+    } finally {
+      setLoading(false);
+    }
   };
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      height="100vh"
-      bgcolor="background.default"
-    >
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{
-          width: '100%',
-          maxWidth: 400,
-          padding: 3,
-          bgcolor: 'white',
-          borderRadius: 2,
-          boxShadow: 3,
-        }}
-      >
-        <Typography variant="h4" align="center" gutterBottom>
-          Register
+    <Box sx={{maxWidth: 400, margin: '0 auto', padding: 3}}>
+      <Typography variant="h4" gutterBottom>Register</Typography>
+      {error && <Typography color="error">{error}</Typography>}
+      <TextField
+        label="Username"
+        variant="outlined"
+        fullWidth
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        sx={{marginBottom: 2}}
+        error={!!formErrors.username}
+        helperText={formErrors.username}
+      />
+      <TextField
+        label="Email"
+        variant="outlined"
+        fullWidth
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        sx={{marginBottom: 2}}
+        error={!!formErrors.email}
+        helperText={formErrors.email}
+      />
+      <TextField
+        label="Password"
+        type="password"
+        variant="outlined"
+        fullWidth
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        sx={{marginBottom: 2}}
+        error={!!formErrors.password}
+        helperText={formErrors.password}
+      />
+      {successMessage && (
+        <Typography color="success" sx={{marginBottom: 2, fontWeight: 'bold'}}>
+          {successMessage}
         </Typography>
-        
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              label="Username"
-              variant="outlined"
-              fullWidth
-              name="username"
-              value={formData.username}
-              onChange={handleInputChange}
-              required
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Email"
-              variant="outlined"
-              type="email"
-              fullWidth
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Password"
-              variant="outlined"
-              type="password"
-              fullWidth
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              required
-            />
-          </Grid>
-        </Grid>
-        
-        <Box mt={2}>
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            color="primary"
-          >
-            Register
-          </Button>
-        </Box>
-      </Box>
+      )}
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        onClick={handleRegister}
+        disabled={loading}
+      >
+        {loading ? 'Registering...' : 'Register'}
+      </Button>
     </Box>
   );
 };

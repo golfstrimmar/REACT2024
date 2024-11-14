@@ -1,0 +1,80 @@
+@import "../../Scss/common/colors";
+
+.posts {
+  .MuiCardContent-root {
+    position: relative;
+    padding-right: 40px;
+    
+    a {
+      font-size: 20px;
+      color: $a;
+      line-height: 2rem;
+      transition: all .2s ease-in-out;
+      
+      &:hover {
+        color: $hov;
+      }
+    }
+  }
+  
+  .css-vbpz4a-MuiButtonBase-root-MuiButton-root {
+    margin: 20px 0;
+  }
+  
+  
+  p {
+    margin: 5px 0 0 0;
+    font-size: 14px;
+  }
+  
+  .MuiSvgIcon-root {
+    transition: all .2s ease-in-out;
+    cursor: pointer;
+    font-size: 20px;
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translate(0%, -50%);
+    
+    &:hover {
+      color: $btn;
+    }
+  }
+}
+
+.css-1lcbsct-MuiTypography-root {
+  line-height: .7 !important;
+}
+
+.post-card {
+  transition: all .5s ease-in-out !important;
+}
+
+.fade-slide-enter {
+  opacity: 0;
+}
+
+.fade-slide-enter-active {
+  opacity: 1;
+  transition: opacity 0.5s ease, transform 0.5s ease !important;
+}
+
+.fade-slide-exit {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  transition: opacity 0.5s ease, transform 0.5s ease !important;
+}
+
+.fade-slide-exit-active {
+  opacity: 0;
+  transform: translateX(-100%) scale(0);
+  transition: opacity 0.5s ease, transform 0.5s ease !important;
+}
+
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}

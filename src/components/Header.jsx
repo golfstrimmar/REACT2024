@@ -9,6 +9,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import MenuItem from '@mui/material/MenuItem';
 import {Link} from "react-router-dom";
+import LogoutButton from '../components/LogoutButton';
 
 const pages = [
   {name: 'Home', path: '/'},
@@ -116,8 +117,9 @@ function ResponsiveAppBar() {
                 </Typography>
               </MenuItem>
             ))}
+          
           </Box>
-        
+          <LogoutButton/>
         </Toolbar>
       </Container>
     </AppBar>
