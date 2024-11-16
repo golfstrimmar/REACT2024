@@ -1,4 +1,5 @@
-// /controllers/PostController.js
+import fs from 'fs';
+import path from 'path';
 import Post from '../models/Post.js';
 
 export const getAll = async (req, res) => {
@@ -37,6 +38,14 @@ export const remove = async (req, res) => {
     if (!doc) {
       return res.status(404).json({error: 'Post not found'});
     }
+    const filePath = path.join('uploads', doc.imageUrl.split('/').pop());
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error('Error while deleting image:', err);
+      } else {
+        console.log('Image deleted successfully');
+      }
+    });
     res.json({
       success: true,
       message: 'Post successfully deleted',
@@ -45,23 +54,31 @@ export const remove = async (req, res) => {
     console.error('Error while deleting post:', err);
     res.status(500).json({error: 'Server error'});
   }
-}
-export const create = async (req, res) => {
+};
+export const create = async (req, res, imageUrl) => {
   try {
-    const doc = new Post({
+    let newTags = req.body.tags;
+    if (typeof newTags === 'string') {
+      newTags = newTags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0);
+    }
+    // Создаем новый пост
+    const post = new Post({
       title: req.body.title,
       text: req.body.text,
-      imageUrl: req.body.imageUrl,
-      tags: req.body.tags,
+      tags: newTags || [],
       user: req.userId,
+      imageUrl,
     });
-    const post = await doc.save();
-    res.status(200).json(post);
+    const savedPost = await post.save();
+    res.status(201).json(savedPost);
   } catch (err) {
-    console.log(err)
-    res.status(500).json(err)
+    console.error('Error in controller:', err);
+    res.status(500).json({error: 'Failed to create post.'});
   }
-}
+};
 export const update = async (req, res) => {
   try {
     const postId = req.params.id;

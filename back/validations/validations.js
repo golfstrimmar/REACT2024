@@ -14,6 +14,5 @@ export const registerValidation = [
 export const postCreateValidation = [
   body('title').isLength({min: 3}).isString().withMessage('Enter post title'),
   body('text').isLength({min: 10}).isString().withMessage('Enter post text'),
-  body('tags').optional().isArray().withMessage('Invalid tag format'),
-  body('imageUrl').optional().isString().withMessage('The link to the image is incorrect')
+  body('tags').optional().isString().withMessage('Invalid tag format'),
 ];

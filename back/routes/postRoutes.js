@@ -1,14 +1,39 @@
 // /routes/postRoutes.js
 import express from 'express';
-import * as PostController from '../controllers/PostController.js';
+import * as PostController from '../controllers/postController.js';
 import checkAuth from '../middlewares/checkAuth.js';
 import {postCreateValidation} from '../validations/validations.js';
 import handelValidationsErrors from '../middlewares/handleValidationsErrors.js';
+import multer from 'multer';
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+const upload = multer({storage});
 const router = express.Router();
 router.get('/', PostController.getAll);
 router.get('/:id', PostController.getOne);
-router.post('/', checkAuth, postCreateValidation, handelValidationsErrors, PostController.create);
 router.delete('/:id', checkAuth, PostController.remove);
 router.patch('/:id', checkAuth, postCreateValidation, handelValidationsErrors, PostController.update);
+router.post(
+  '/',
+  checkAuth,
+  upload.single('image'),
+  postCreateValidation,
+  handelValidationsErrors,
+  async (req, res) => {
+    try {
+      const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+      await PostController.create(req, res, imageUrl);
+    } catch (err) {
+      console.error('Error in route:', err);
+      res.status(500).json({message: 'Failed to create post.'});
+    }
+  }
+);
 export default router;
