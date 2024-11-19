@@ -63,3 +63,16 @@ export const getMe = async (req, res) => {
     })
   }
 }
+export const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);  // Ищем пользователя по ID
+    if (!user) {
+      return res.status(404).json({message: 'User not found'});  // Если пользователь не найден
+    }
+    const {passwordHash, ...userData} = user._doc;  // Оставляем все, кроме пароля
+    res.json(userData);  // Отправляем данные о пользователе
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({message: 'Server error'});  // В случае ошибки
+  }
+};

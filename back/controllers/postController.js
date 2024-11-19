@@ -1,10 +1,19 @@
 import fs from 'fs';
 import path from 'path';
 import Post from '../models/Post.js';
+import Comment from '../models/Comment.js';
 
 export const getAll = async (req, res) => {
   try {
-    const posts = await Post.find().populate("user").exec();
+    // Получаем параметры сортировки с фронтенда
+    const {sortBy = 'createdAt', order = 'desc'} = req.query;
+    // Формируем параметры сортировки для MongoDB
+    const sortOptions = {[sortBy]: order === 'asc' ? 1 : -1};
+    // Выполняем запрос к базе с учетом сортировки
+    const posts = await Post.find()
+      .populate('user') // Заполняем поле user
+      .sort(sortOptions) // Применяем сортировку
+      .exec();
     res.json(posts)
   } catch (error) {
     console.log(error)
@@ -31,30 +40,23 @@ export const getOne = async (req, res) => {
     res.status(500).json(err)
   }
 }
+// -------------------------------
 export const remove = async (req, res) => {
   try {
-    const postId = req.params.id;
-    const doc = await Post.findOneAndDelete({_id: postId});
-    if (!doc) {
-      return res.status(404).json({error: 'Post not found'});
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({message: 'Post not found'});
     }
-    const filePath = path.join('uploads', doc.imageUrl.split('/').pop());
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.error('Error while deleting image:', err);
-      } else {
-        console.log('Image deleted successfully');
-      }
-    });
-    res.json({
-      success: true,
-      message: 'Post successfully deleted',
-    });
+    // Удаляем все комментарии, связанные с этим постом
+    await Comment.deleteMany({postId: post._id});
+    // Удаляем сам пост
+    await Post.findByIdAndDelete(req.params.id);
+    res.status(200).json({message: 'Post and related comments deleted successfully'});
   } catch (err) {
-    console.error('Error while deleting post:', err);
-    res.status(500).json({error: 'Server error'});
+    res.status(500).json({message: 'Failed to delete post and comments', error: err.message});
   }
 };
+// ------------------------------
 export const create = async (req, res, imageUrl) => {
   try {
     let newTags = req.body.tags;
@@ -64,7 +66,6 @@ export const create = async (req, res, imageUrl) => {
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0);
     }
-    // Создаем новый пост
     const post = new Post({
       title: req.body.title,
       text: req.body.text,
@@ -79,23 +80,39 @@ export const create = async (req, res, imageUrl) => {
     res.status(500).json({error: 'Failed to create post.'});
   }
 };
-export const update = async (req, res) => {
+// ---------------------------
+export const update = async (req, res, imageUrl) => {
   try {
     const postId = req.params.id;
-    await Post.updateOne({
-      _id: postId,
-    }, {
-      title: req.body.title,
-      text: req.body.text,
-      imageUrl: req.body.imageUrl,
-      tags: req.body.tags,
-      user: req.userId,
-    })
-    res.status(200).json({
-      success: true,
-    });
+    const existingPost = await Post.findById(postId);
+    if (!existingPost) {
+      return res.status(404).json({message: 'Post not found'});
+    }
+    const updatedData = {
+      title: req.body.title || existingPost.title,
+      text: req.body.text || existingPost.text,
+      tags: req.body.tags
+        ? Array.isArray(req.body.tags)
+          ? req.body.tags
+          : req.body.tags
+            .split(',')
+            .map(tag => tag.trim())
+            .filter(tag => tag.length > 0)
+        : existingPost.tags,
+      user: existingPost.userId,
+      imageUrl: imageUrl || existingPost.imageUrl, // Оставляем старое изображение, если новое не было передано
+    };
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      updatedData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).populate('user');
+    res.status(200).json(updatedPost);
   } catch (err) {
-    console.error('Error while deleting post:', err);
-    res.status(500).json({error: 'Server error'});
+    console.error('Error updating post:', err);
+    res.status(500).json({message: 'Server error', error: err});
   }
-}
+};

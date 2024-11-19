@@ -19,7 +19,23 @@ const router = express.Router();
 router.get('/', PostController.getAll);
 router.get('/:id', PostController.getOne);
 router.delete('/:id', checkAuth, PostController.remove);
-router.patch('/:id', checkAuth, postCreateValidation, handelValidationsErrors, PostController.update);
+router.patch(
+  '/:id',
+  checkAuth,
+  upload.single('image'),
+  postCreateValidation,
+  handelValidationsErrors,
+  // PostController.update
+  async (req, res) => {
+    try {
+      const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+      await PostController.update(req, res, imageUrl);
+    } catch (err) {
+      console.error('Error in route:', err);
+      res.status(500).json({message: 'Failed to update post.', err});
+    }
+  }
+);
 router.post(
   '/',
   checkAuth,
