@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import Post from '../models/Post.js';
 import Comment from '../models/Comment.js';
+import cloudinary from '../config/cloudinaryConfig.js'
 
 export const getAll = async (req, res) => {
   try {
@@ -47,6 +48,21 @@ export const remove = async (req, res) => {
     if (!post) {
       return res.status(404).json({message: 'Post not found'});
     }
+    // Удаляем изображение из Cloudinary, если imageUrl существует
+    if (post.imageUrl) {
+      const extractPublicId = (url) => {
+        const parts = url.split('/');
+        const versionIndex = parts.findIndex((part) => part.startsWith('v')); // Находим версию
+        return parts.slice(versionIndex + 1).join('/').replace(/\.[^/.]+$/, ''); // Удаляем расширение
+      };
+      const publicId = extractPublicId(post.imageUrl);
+      try {
+        await cloudinary.uploader.destroy(publicId);
+        console.log(`Image ${publicId} deleted from Cloudinary`);
+      } catch (err) {
+        console.error('Failed to delete image from Cloudinary:', err.message);
+      }
+    }
     // Удаляем все комментарии, связанные с этим постом
     await Comment.deleteMany({postId: post._id});
     // Удаляем сам пост
@@ -57,68 +73,98 @@ export const remove = async (req, res) => {
   }
 };
 // ------------------------------
-export const create = async (req, res) => {
-  try {
-    const {title, text, tags, imageUrl} = req.body; // Здесь imageUrl должен приходить через тело запроса
-    const newPost = new PostModel({
-      title,
-      text,
-      tags: tags ? tags.split(',').map((tag) => tag.trim()) : [],
-      imageUrl,
-      user: req.userId,
-    });
-    const savedPost = await newPost.save();
-    res.status(201).json(savedPost);
-  } catch (err) {
-    console.error('Error creating post:', err);
-    res.status(500).json({message: 'Failed to create post.'});
-  }
-};
-// export const create = async (req, res, imageUrl) => {
+// export const create = async (req, res) => {
 //   try {
-//     let newTags = req.body.tags;
-//     if (typeof newTags === 'string') {
-//       newTags = newTags
-//         .split(',')
-//         .map(tag => tag.trim())
-//         .filter(tag => tag.length > 0);
-//     }
-//     const post = new Post({
-//       title: req.body.title,
-//       text: req.body.text,
-//       tags: newTags || [],
-//       user: req.userId,
+//     const {title, text, tags, imageUrl} = req.body; // Здесь imageUrl должен приходить через тело запроса
+//     const newPost = new PostModel({
+//       title,
+//       text,
+//       tags: tags ? tags.split(',').map((tag) => tag.trim()) : [],
 //       imageUrl,
+//       user: req.userId,
 //     });
-//     const savedPost = await post.save();
+//     const savedPost = await newPost.save();
 //     res.status(201).json(savedPost);
 //   } catch (err) {
-//     console.error('Error in controller:', err);
-//     res.status(500).json({error: 'Failed to create post.'});
+//     console.error('Error creating post:', err);
+//     res.status(500).json({message: 'Failed to create post.'});
 //   }
 // };
+export const create = async (req, res) => {
+  try {
+    let newTags = req.body.tags;
+    if (typeof newTags === 'string') {
+      newTags = newTags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0);
+    }
+    const post = new Post({
+      title: req.body.title,
+      text: req.body.text,
+      tags: newTags || [],
+      user: req.userId,
+      imageUrl: req.body.imageUrl,
+    });
+    const savedPost = await post.save();
+    res.status(201).json(savedPost);
+  } catch (err) {
+    console.error('Error in controller:', err);
+    res.status(500).json({error: 'Failed to create post.'});
+  }
+};
 // ---------------------------
 export const update = async (req, res) => {
   try {
     const {id} = req.params;
-    const {title, text, tags, imageUrl} = req.body;
-    const updatedPost = await PostModel.findByIdAndUpdate(
+    let newTags = req.body.tags;
+    if (typeof newTags === 'string') {
+      newTags = newTags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0);
+    }
+    const updatedPost = await Post.findByIdAndUpdate(
       id,
       {
-        title,
-        text,
-        tags: tags ? tags.split(',').map((tag) => tag.trim()) : [],
-        imageUrl, // Обновляем поле с URL изображения
+        title: req.body.title,
+        text: req.body.text,
+        tags: newTags || [],
+        user: req.userId,
+        positiveLikes: req.positiveLikes,
+        negativeLikes: req.negativeLikes,
+        imageUrl: req.body.imageUrl,
       },
       {new: true}
+    ).populate('user');
+    res.status(200).json(updatedPost);
+    if (!updatedPost) {
+      return res.status(404).json({message: 'Post not found.'});
+    }
+  } catch (err) {
+    console.error('Error updating post:', err);
+    res.status(500).json({message: 'Failed to update post.'});
+  }
+};
+// -----------------------
+export const updateLikes = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const {positiveLikes, negativeLikes} = req.body;
+    const updatedPost = await Post.findByIdAndUpdate(
+      id,
+      {
+        $set: {positiveLikes, negativeLikes},
+      },
+      {new: true} // Возвращает обновленный документ
     );
     if (!updatedPost) {
       return res.status(404).json({message: 'Post not found.'});
     }
-    res.json(updatedPost);
+    res.status(200).json(updatedPost);
   } catch (err) {
-    console.error('Error updating post:', err);
-    res.status(500).json({message: 'Failed to update post.'});
+    console.error('Error updating likes:', err);
+    res.status(500).json({message: 'Failed to update likes.'});
   }
 };
 // export const update = async (req, res, imageUrl) => {

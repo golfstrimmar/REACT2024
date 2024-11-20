@@ -4,8 +4,9 @@ import {connectDB} from './config/db.js';
 import postRoutes from './routes/postRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import commentRoutes from './routes/commentRoutes.js';
-// import * as UserController from './controllers/UserController.js';
-// import {getMe} from "./controllers/UserController.js"; // Импортируем контроллер
+import multer from 'multer';
+
+const upload = multer();
 connectDB();
 const app = express();
 app.use(cors({
@@ -18,14 +19,20 @@ app.use(express.json());
 // --------------------------------
 // расшифровка запроса
 app.use((req, res, next) => {
-  console.log(`Incoming request: ${req.method} ${req.url}`);
+  // console.log(`Incoming request: ${req.method} ${req.url}`);
+  console.log(`Incoming request:  method=${req.method} url=${req.url}   body=${req.body}    body=${JSON.stringify(req.body, null, 2)}`);
   next();
 });
 // вывод сообщения в браузер при пустом запросе. ничего не делает. просто индикация запуска сервера
 app.get('/', (req, res) => {
   res.send('<h1>Hello from the server 5000!</h1>');
 });
-app.use('/posts', postRoutes);
+// app.use('/posts', postRoutes);
+// Обработка маршрута
+app.use('/posts', upload.none(), (req, res, next) => {
+  console.log('Body content:', req.body); // Данные формы
+  next();
+}, postRoutes);
 app.use('/auth', userRoutes);
 app.use('/comments', commentRoutes);
 app.use('/uploads', express.static('uploads'));

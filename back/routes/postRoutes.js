@@ -41,15 +41,16 @@ router.post(
   handelValidationsErrors,
   async (req, res) => {
     try {
-      const {title, text, tags, imageUrl} = req.body; // Принимаем imageUrl из тела запроса
+      // const {title, text, tags, imageUrl} = req.body; // Принимаем imageUrl из тела запроса
       // Вызываем контроллер создания поста
-      await PostController.create(req, res, imageUrl);
+      await PostController.create(req, res);
     } catch (err) {
       console.error('Error in route:', err);
       res.status(500).json({message: 'Failed to create post.'});
     }
   }
 );
+router.patch('/:id/likes', PostController.updateLikes);
 export default router;
 // // /routes/postRoutes.js
 // import express from 'express';
