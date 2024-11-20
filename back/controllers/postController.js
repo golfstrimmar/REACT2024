@@ -57,15 +57,15 @@ export const remove = async (req, res) => {
   }
 };
 // ------------------------------
-export const create = async (req, res, imageUrl) => {
+export const create = async (req, res) => {
   try {
-    const {title, text, tags} = req.body;
+    const {title, text, tags, imageUrl} = req.body; // Здесь imageUrl должен приходить через тело запроса
     const newPost = new PostModel({
       title,
       text,
       tags: tags ? tags.split(',').map((tag) => tag.trim()) : [],
-      imageUrl, // Используем переданный URL
-      user: req.userId, // Передаем идентификатор пользователя из токена
+      imageUrl,
+      user: req.userId,
     });
     const savedPost = await newPost.save();
     res.status(201).json(savedPost);
@@ -98,10 +98,10 @@ export const create = async (req, res, imageUrl) => {
 //   }
 // };
 // ---------------------------
-export const update = async (req, res, imageUrl) => {
+export const update = async (req, res) => {
   try {
     const {id} = req.params;
-    const {title, text, tags} = req.body;
+    const {title, text, tags, imageUrl} = req.body;
     const updatedPost = await PostModel.findByIdAndUpdate(
       id,
       {
