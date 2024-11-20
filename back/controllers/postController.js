@@ -59,60 +59,100 @@ export const remove = async (req, res) => {
 // ------------------------------
 export const create = async (req, res, imageUrl) => {
   try {
-    let newTags = req.body.tags;
-    if (typeof newTags === 'string') {
-      newTags = newTags
-        .split(',')
-        .map(tag => tag.trim())
-        .filter(tag => tag.length > 0);
-    }
-    const post = new Post({
-      title: req.body.title,
-      text: req.body.text,
-      tags: newTags || [],
-      user: req.userId,
-      imageUrl,
+    const {title, text, tags} = req.body;
+    const newPost = new PostModel({
+      title,
+      text,
+      tags: tags ? tags.split(',').map((tag) => tag.trim()) : [],
+      imageUrl, // Используем переданный URL
+      user: req.userId, // Передаем идентификатор пользователя из токена
     });
-    const savedPost = await post.save();
+    const savedPost = await newPost.save();
     res.status(201).json(savedPost);
   } catch (err) {
-    console.error('Error in controller:', err);
-    res.status(500).json({error: 'Failed to create post.'});
+    console.error('Error creating post:', err);
+    res.status(500).json({message: 'Failed to create post.'});
   }
 };
+// export const create = async (req, res, imageUrl) => {
+//   try {
+//     let newTags = req.body.tags;
+//     if (typeof newTags === 'string') {
+//       newTags = newTags
+//         .split(',')
+//         .map(tag => tag.trim())
+//         .filter(tag => tag.length > 0);
+//     }
+//     const post = new Post({
+//       title: req.body.title,
+//       text: req.body.text,
+//       tags: newTags || [],
+//       user: req.userId,
+//       imageUrl,
+//     });
+//     const savedPost = await post.save();
+//     res.status(201).json(savedPost);
+//   } catch (err) {
+//     console.error('Error in controller:', err);
+//     res.status(500).json({error: 'Failed to create post.'});
+//   }
+// };
 // ---------------------------
 export const update = async (req, res, imageUrl) => {
   try {
-    const postId = req.params.id;
-    const existingPost = await Post.findById(postId);
-    if (!existingPost) {
-      return res.status(404).json({message: 'Post not found'});
-    }
-    const updatedData = {
-      title: req.body.title || existingPost.title,
-      text: req.body.text || existingPost.text,
-      tags: req.body.tags
-        ? Array.isArray(req.body.tags)
-          ? req.body.tags
-          : req.body.tags
-            .split(',')
-            .map(tag => tag.trim())
-            .filter(tag => tag.length > 0)
-        : existingPost.tags,
-      user: existingPost.userId,
-      imageUrl: imageUrl || existingPost.imageUrl, // Оставляем старое изображение, если новое не было передано
-    };
-    const updatedPost = await Post.findByIdAndUpdate(
-      postId,
-      updatedData,
+    const {id} = req.params;
+    const {title, text, tags} = req.body;
+    const updatedPost = await PostModel.findByIdAndUpdate(
+      id,
       {
-        new: true,
-        runValidators: true,
-      }
-    ).populate('user');
-    res.status(200).json(updatedPost);
+        title,
+        text,
+        tags: tags ? tags.split(',').map((tag) => tag.trim()) : [],
+        imageUrl, // Обновляем поле с URL изображения
+      },
+      {new: true}
+    );
+    if (!updatedPost) {
+      return res.status(404).json({message: 'Post not found.'});
+    }
+    res.json(updatedPost);
   } catch (err) {
     console.error('Error updating post:', err);
-    res.status(500).json({message: 'Server error', error: err});
+    res.status(500).json({message: 'Failed to update post.'});
   }
 };
+// export const update = async (req, res, imageUrl) => {
+//   try {
+//     const postId = req.params.id;
+//     const existingPost = await Post.findById(postId);
+//     if (!existingPost) {
+//       return res.status(404).json({message: 'Post not found'});
+//     }
+//     const updatedData = {
+//       title: req.body.title || existingPost.title,
+//       text: req.body.text || existingPost.text,
+//       tags: req.body.tags
+//         ? Array.isArray(req.body.tags)
+//           ? req.body.tags
+//           : req.body.tags
+//             .split(',')
+//             .map(tag => tag.trim())
+//             .filter(tag => tag.length > 0)
+//         : existingPost.tags,
+//       user: existingPost.userId,
+//       imageUrl: imageUrl || existingPost.imageUrl, // Оставляем старое изображение, если новое не было передано
+//     };
+//     const updatedPost = await Post.findByIdAndUpdate(
+//       postId,
+//       updatedData,
+//       {
+//         new: true,
+//         runValidators: true,
+//       }
+//     ).populate('user');
+//     res.status(200).json(updatedPost);
+//   } catch (err) {
+//     console.error('Error updating post:', err);
+//     res.status(500).json({message: 'Server error', error: err});
+//   }
+// };
