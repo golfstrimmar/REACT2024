@@ -1,7 +1,7 @@
 import axios from 'axios';
 // Указываем базовый URL нашего бэкенда
 const instance = axios.create({
-  baseURL: 'http://localhost:5000', // Адрес бэкенда
+  baseURL: `${process.env.REACT_APP_API_URL}`, // Адрес бэкенда
   headers: {
     'Content-Type': 'multipart/form-data',
   },
