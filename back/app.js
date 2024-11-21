@@ -9,11 +9,11 @@ import multer from 'multer';
 const upload = multer();
 connectDB();
 const app = express();
-// app.use(cors({
-//   origin: 'http://localhost:3000', // Фронтенд приложение
-//   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-// }));
+app.use(cors({
+  origin: 'https://react2024-1.onrender.com', // Фронтенд приложение
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 // const allowedOrigins = [
 //   'http://localhost:3000', // Для локальной разработки
 //   'https://blog-woad-ten-78.vercel.app', // Продакшн
@@ -35,15 +35,10 @@ const app = express();
 //   allowedHeaders: ['Content-Type', 'Authorization'],
 // }));
 // app.use(cors({
-//   origin: 'https://blog-woad-ten-78.vercel.app', // Заменить на реальный URL проекта
+//   origin: '*', // Разрешить запросы отовсюду
 //   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
 //   allowedHeaders: ['Content-Type', 'Authorization'],
 // }));
-app.use(cors({
-  origin: '*', // Разрешить запросы отовсюду
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
 // --------------------------------
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
