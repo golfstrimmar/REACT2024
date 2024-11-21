@@ -1,15 +1,13 @@
 {
   "version": 2,
+  "env": {
+    "CI": "false"
+  },
   "routes": [
     {
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build"
-    }
   ]
 }
+
