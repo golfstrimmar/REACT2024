@@ -10,7 +10,7 @@ const upload = multer();
 connectDB();
 const app = express();
 app.use(cors({
-  origin: 'https://blog-woad-ten-78.vercel.app/',
+  origin: 'https://blog-woad-ten-78.vercel.app',
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
