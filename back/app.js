@@ -34,6 +34,11 @@ const app = express();
 //   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
 //   allowedHeaders: ['Content-Type', 'Authorization'],
 // }));
+// app.use(cors({
+//   origin: 'https://blog-woad-ten-78.vercel.app', // Заменить на реальный URL проекта
+//   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+// }));
 app.use(cors({
   origin: '*', // Разрешить запросы отовсюду
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
