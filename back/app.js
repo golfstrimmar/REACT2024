@@ -9,14 +9,30 @@ import multer from 'multer';
 const upload = multer();
 connectDB();
 const app = express();
+// app.use(cors({
+//   origin: 'http://localhost:3000', // Фронтенд приложение
+//   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+// }));
+const allowedOrigins = [
+  'http://localhost:3000', // Для локальной разработки
+  'https://blog-woad-ten-78.vercel.app/', // Продакшн
+];
 app.use(cors({
-  origin: 'http://localhost:3000', // Фронтенд приложение
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+// --------------------------------
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
-// --------------------------------
+// -------------------------------------
 // расшифровка запроса
 app.use((req, res, next) => {
   // console.log(`Incoming request: ${req.method} ${req.url}`);
