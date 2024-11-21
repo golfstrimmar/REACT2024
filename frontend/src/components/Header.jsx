@@ -97,7 +97,7 @@ function ResponsiveAppBar() {
         top: 0,
         left: 0,
         right: 0,
-        backgroundColor: scrollY > 50 ? '#033362D3' : 'rgb(3,51,98)', // Изменяем цвет фона в зависимости от прокрутки
+        backgroundColor: scrollY > 50 ? '#033362D3' : 'rgb(3,51,98)',
         transition: 'background-color 0.3s ease', // Плавное изменение фона
         boxShadow: scrollY > 50 ? '0px 4px 6px rgba(0, 0, 0, 0.1)' : 'none', // Тень при прокрутке
       }}
