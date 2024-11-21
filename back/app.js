@@ -10,7 +10,7 @@ const upload = multer();
 connectDB();
 const app = express();
 app.use(cors({
-  origin: 'https://react2024-1.onrender.com', // Фронтенд приложение
+  origin: 'https://blog-woad-ten-78.vercel.app/', // Фронтенд приложение
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
