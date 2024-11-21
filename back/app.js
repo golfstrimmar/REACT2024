@@ -16,7 +16,7 @@ const app = express();
 // }));
 const allowedOrigins = [
   'http://localhost:3000', // Для локальной разработки
-  'https://blog-woad-ten-78.vercel.app/', // Продакшн
+  'https://blog-woad-ten-78.vercel.app', // Продакшн
 ];
 app.use(cors({
   origin: (origin, callback) => {
