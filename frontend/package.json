@@ -19,6 +19,7 @@
     "react-transition-group": "^4.4.5",
     "sass": "^1.80.6",
     "sass-loader": "^16.0.3",
+    "serve": "^14.2.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
