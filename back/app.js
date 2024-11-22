@@ -14,7 +14,7 @@ app.use(
     // origin: "https://blog-woad-ten-78.vercel.app",
     // origin: "http://localhost:3000",
     // origin: "https://react-blog-beryl-nu.vercel.app",
-    origin: "https://react-blog-git-blog1-golfstrimmars-projects.vercel.app",
+    origin: "https://react-blog-beryl-nu.vercel.app",
     methods: ["GET", "POST", "PATCH", "DELETE", "PUT"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
