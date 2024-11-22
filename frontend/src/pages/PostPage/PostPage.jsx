@@ -14,6 +14,7 @@ import "./PostPage.scss";
 import ErrorModal from "../../components/ErrorModal/ErrorModal";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useAuth } from "../../context/AuthContext";
 // ==================
 const PostPage = () => {
   const { id } = useParams(); // Получаем id из URL
@@ -32,6 +33,7 @@ const PostPage = () => {
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [commentError, setCommentError] = useState("");
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
   // ==============
   useEffect(() => {
     const fetchPostData = async () => {
@@ -191,7 +193,7 @@ const PostPage = () => {
           </Typography>
 
           {/* Форма для добавления комментария */}
-          {userToken ? (
+          {isAuthenticated && userToken ? (
             <div className="add-comment-form">
               <TextField
                 label={editingCommentId ? "Edit your comment" : "Add a Comment"}
@@ -215,24 +217,25 @@ const PostPage = () => {
                 startIcon={<CommentIcon />}
                 sx={{ marginTop: 2 }}
               >
-                {editingCommentId && (
-                  <Button
-                    variant="text"
-                    color="error"
-                    onClick={() => {
-                      setEditingCommentId(null);
-                      setNewComment("");
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                )}
                 {isSubmitting
                   ? "Submitting..."
                   : editingCommentId
                     ? "Save Changes"
                     : "Post Comment"}
               </Button>
+              {editingCommentId && (
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={() => {
+                    setEditingCommentId(null);
+                    setNewComment("");
+                  }}
+                  sx={{ marginTop: 2, marginLeft: 1 }}
+                >
+                  Cancel
+                </Button>
+              )}
             </div>
           ) : (
             <Typography variant="body1" color="textSecondary">
@@ -240,6 +243,7 @@ const PostPage = () => {
             </Typography>
           )}
           {/* Отображаем комментарии */}
+          <Divider sx={{ marginBottom: 3 }} />
           {comments.length > 0 ? (
             comments.map((comment) => (
               <Box key={comment._id} sx={{ marginBottom: 2 }}>
@@ -257,23 +261,25 @@ const PostPage = () => {
                   {comment.body}
                 </Typography>
                 {/* Кнопки только для автора комментария */}
-                {currentUser && comment.userId._id === currentUser._id && (
-                  <Box sx={{ display: "flex", gap: 1 }}>
-                    <Button
-                      startIcon={<EditIcon />}
-                      onClick={() => startEditComment(comment)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      startIcon={<DeleteIcon />}
-                      color="error"
-                      onClick={() => handleDeleteComment(comment._id)}
-                    >
-                      Delete
-                    </Button>
-                  </Box>
-                )}
+                {isAuthenticated &&
+                  currentUser &&
+                  comment.userId._id === currentUser._id && (
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      <Button
+                        startIcon={<EditIcon />}
+                        onClick={() => startEditComment(comment)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        startIcon={<DeleteIcon />}
+                        color="error"
+                        onClick={() => handleDeleteComment(comment._id)}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                  )}
                 <Divider />
               </Box>
             ))
