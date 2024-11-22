@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "../../API/axios";
-import { Box, Button, CircularProgress, Pagination } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  Pagination,
+} from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -230,8 +236,7 @@ const Posts = () => {
   return (
     <div className="page posts">
       <h1>Posts</h1>
-      (isAuthenticated &&
-      {
+      {isAuthenticated && (
         <Button
           variant="contained"
           color="primary"
@@ -240,8 +245,9 @@ const Posts = () => {
         >
           Add New Post
         </Button>
-      }
-      ){/* Sorting Selects */}
+      )}
+      {/* Sorting Selects */}
+      <Divider sx={{ marginBottom: 3, marginTop: 3 }} />
       <div className="sort-controls">
         <FormControl sx={{ minWidth: 150, marginRight: 2 }}>
           <InputLabel id="sortBy-label">Sort By</InputLabel>
