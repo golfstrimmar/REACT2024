@@ -6,17 +6,17 @@ import userRoutes from "./routes/userRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
 import multer from "multer";
 
-
 const upload = multer();
 connectDB();
 const app = express();
 app.use(
   cors({
     // origin: "http://localhost:3000",
-    origin: "https://react-blog-beryl-nu.vercel.app",
+    // origin: "https://react-blog-beryl-nu.vercel.app",
+    origin: "*",
     methods: ["GET", "POST", "PATCH", "DELETE", "PUT"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  }),
+  })
 );
 // const allowedOrigins = [
 //   'http://localhost:3000', // Для локальной разработки
@@ -51,7 +51,9 @@ app.use(express.json());
 app.use((req, res, next) => {
   // console.log(`Incoming request: ${req.method} ${req.url}`);
   console.log(
-    `Incoming request:  method=${req.method} url=${req.url}   body=${req.body}    body=${JSON.stringify(req.body, null, 2)}`,
+    `Incoming request:  method=${req.method} url=${req.url}   body=${
+      req.body
+    }    body=${JSON.stringify(req.body, null, 2)}`
   );
   next();
 });
@@ -68,7 +70,7 @@ app.use(
     console.log("Body content:", req.body); // Данные формы
     next();
   },
-  postRoutes,
+  postRoutes
 );
 app.use("/auth", userRoutes);
 app.use("/comments", commentRoutes);
