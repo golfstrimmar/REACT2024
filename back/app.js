@@ -6,6 +6,7 @@ import userRoutes from "./routes/userRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
 import multer from "multer";
 
+
 const upload = multer();
 connectDB();
 const app = express();

@@ -38,7 +38,6 @@ const Posts = () => {
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const [postToEdit, setPostToEdit] = useState(null);
   const { isAuthenticated, setIsAuthenticated } = useAuth();
-  // const [postID, setPostID] = useState(null)
   // ----------------------------------------
   useEffect(() => {
     const fetchPosts = async () => {
@@ -47,10 +46,7 @@ const Posts = () => {
           `${process.env.REACT_APP_API_URL}/posts`,
           {
             params: { sortBy, order },
-            // headers: {
-            //   Authorization: `Bearer ${localStorage.getItem('token')}`,
-            // },
-          },
+          }
         );
         setPosts(response.data);
         setLoading(false);
@@ -84,14 +80,14 @@ const Posts = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "multipart/form-data",
           },
-        },
+        }
       );
       const updatedPost = response.data;
       console.log(updatedPost);
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
-          post._id === postId ? { ...post, ...updatedPost } : post,
-        ),
+          post._id === postId ? { ...post, ...updatedPost } : post
+        )
       );
       handleCloseAddPostModal();
     } catch (err) {
@@ -118,7 +114,7 @@ const Posts = () => {
   // -----------------------------------
   const handleExited = () => {
     setPosts((prevPosts) =>
-      prevPosts.filter((post) => post._id !== deletingPostId),
+      prevPosts.filter((post) => post._id !== deletingPostId)
     );
     setDeletingPostId(null);
   };
@@ -126,7 +122,7 @@ const Posts = () => {
   const handleAddPost = async (newPost) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/posts`,
+        `${process.env.REACT_APP_API_URL}/posts`
       );
       setPosts(response.data);
     } catch (err) {
@@ -189,7 +185,7 @@ const Posts = () => {
     try {
       const response = await axios.patch(
         `${process.env.REACT_APP_API_URL}/posts/${postId}/likes`,
-        likesData,
+        likesData
       );
       const updatedPost = response.data;
       // Обновляем только тот пост, который был изменен
@@ -201,8 +197,8 @@ const Posts = () => {
                 positiveLikes: updatedPost.positiveLikes,
                 negativeLikes: updatedPost.negativeLikes,
               }
-            : post,
-        ),
+            : post
+        )
       );
     } catch (err) {
       console.error("Error updating likes:", err);
@@ -212,7 +208,7 @@ const Posts = () => {
   const inkpositiveLikes = (
     postId,
     currentPositiveLikes,
-    currentNegativeLikes,
+    currentNegativeLikes
   ) => {
     const newPositiveLikes = currentPositiveLikes + 1;
     updateLikes(postId, {
@@ -223,7 +219,7 @@ const Posts = () => {
   const inknegativeLikes = (
     postId,
     currentPositiveLikes,
-    currentNegativeLikes,
+    currentNegativeLikes
   ) => {
     const newNegativeLikes = currentNegativeLikes + 1;
     updateLikes(postId, {
@@ -368,7 +364,7 @@ const Posts = () => {
                             inkpositiveLikes(
                               post._id,
                               post.positiveLikes,
-                              post.negativeLikes,
+                              post.negativeLikes
                             );
                           }}
                         />{" "}
@@ -384,7 +380,7 @@ const Posts = () => {
                             inknegativeLikes(
                               post._id,
                               post.positiveLikes,
-                              post.negativeLikes,
+                              post.negativeLikes
                             );
                           }}
                         />{" "}
